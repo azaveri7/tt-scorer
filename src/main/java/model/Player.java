@@ -1,3 +1,4 @@
+/*
 package model;
 
 public interface Player {
@@ -11,3 +12,4 @@ public interface Player {
     }
 
 }
+*/

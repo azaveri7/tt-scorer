@@ -1,8 +1,7 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import util.RandomNumberGenerator;
+import static util.TTConstants.*;
 
 public class Match {
 
@@ -11,94 +10,83 @@ public class Match {
     }
 
     private State state;
-    private Player p1;
-    private Player p2;
+    private final TTPlayer player1;
+    private final TTPlayer player2;
 
-    public Player getP1() {
-        return p1;
+    public Match( String player1, String player2) {
+        this.state = State.NOT_STARTED;
+        this.player1 = new TTPlayer(player1);
+        this.player2 = new TTPlayer(player2);
     }
 
-    public void setP1(Player p1) {
-        this.p1 = p1;
-    }
-
-    public Player getP2() {
-        return p2;
-    }
-
-    public void setP2(Player p2) {
-        this.p2 = p2;
-    }
-
-    public State getState(){
-        return state;
-    }
-
-    public void changeMatchStatus(State state){
+    public Match(State state, TTPlayer player1, TTPlayer player2) {
         this.state = state;
+        this.player1 = player1;
+        this.player2 = player2;
     }
 
-    public Match(State state) {
-        this.state = state;
+    public TTPlayer getPlayer1() {
+        return this.player1;
     }
 
-    public Match(State state, Player p1, Player p2){
-        this.state = state;
-        this.p1 = p1;
-        this.p2 = p2;
+    public TTPlayer getPlayer2() {
+        return this.player2;
     }
 
-    public Match newMatch(State state){
-        return new Match(state);
+    public State getState() {
+        return this.state;
     }
 
-    public boolean isMatchEnded(){
-        return this.state == State.COMPLETED;
+    public void changeServe() {
+        this.getPlayer1().setServing(!this.getPlayer1().isServing());
+        this.getPlayer2().setServing(!this.getPlayer2().isServing());
     }
 
-    public List<Player> getPlayers(){
-        List<Player> players = new ArrayList<>();
-        players.add(p1);
-        players.add(p2);
-        return players;
-    }
-
-
-    public void displayScore(){
-        System.out.println("*********");
-        System.out.println("Status : " + getState().toString());
-        System.out.println(p1.toString());
-        System.out.println(p2.toString());
-        System.out.println("*********");
-    }
-
-    public void displayServeChangeMsg(boolean serveIndicator){
-        System.out.println("*********");
-        System.out.println("Serve change");
-        if(serveIndicator){
-            System.out.println(p1.getScoreCardName() + " is serving.");
-            System.out.println(p2.getScoreCardName() + " is receiving.");
+    public void updatePlayerPoints() {
+        if (RandomNumberGenerator.get() % 2 == 0) {
+            this.getPlayer1().incrementPoint();
         } else {
-            System.out.println(p2.getScoreCardName() + " is serving.");
-            System.out.println(p1.getScoreCardName() + " is receiving.");
+            this.getPlayer2().incrementPoint();
         }
-        System.out.println("*********");
     }
 
-    public void displayMatchResult(){
-        displayScore();
-        System.out.println("*********");
-        if(p1.getPoints() > p2.getPoints()){
-            System.out.println("Winner is : " + p1.getScoreCardName());
-        } else {
-            System.out.println("Winner is : " + p2.getScoreCardName());
-        }
-        System.out.println("*********");
+    public void start(){
+        this.setState(Match.State.IN_PROGRESS);
+        this.getPlayer1().setServing(true);
+        this.getPlayer2().setServing(false);
     }
 
-    /*public int getTossResult(int size){
+    public void end(){
+        this.setState(State.COMPLETED);
+    }
 
-    }*/
+    private void setState(State state) {
+        this.state = state;
+    }
 
+    public boolean isEnded() {
+        if (this.getPlayer1().getPoints() == GOLDEN_POINT && this.getPlayer2().getPoints() == GOLDEN_POINT) {
+            return false;
+        } else if (this.getPlayer1().getPoints() == MAX_POINTS || this.getPlayer2().getPoints() == MAX_POINTS) {
+            return true;
+        } else if (this.getPlayer1().getPoints() > 10
+                || this.getPlayer2().getPoints() > 10) {
+              return Math.abs(this.getPlayer1().getPoints() - this.getPlayer2().getPoints()) > 1;
+        }
+        return false;
+    }
 
+    public TTPlayer getWinner(){
+        if(player1.getPoints() > player2.getPoints())
+            return player1;
+        else
+            return player2;
+    }
+
+    public TTPlayer getLoser(){
+        if(player1.getPoints() > player2.getPoints())
+            return player2;
+        else
+            return player1;
+    }
 }

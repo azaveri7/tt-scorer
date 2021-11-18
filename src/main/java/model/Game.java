@@ -1,56 +1,82 @@
 package model;
 
-import util.TTUtil;
+import java.util.Scanner;
 
 import static util.TTConstants.*;
 
 public final class Game {
+
+    private Match match;
+
+    public Game(Match match){
+        this.match = match;
+    }
+
+    public void play(){
+        int serveCounter = 0;
+        match.start();
+        displayServeMessage();
+        while (!match.isEnded()) {
+            if (isServeChangeRequired(serveCounter)) {
+                match.changeServe();
+                displayServeMessage();
+            }
+            match.updatePlayerPoints();
+            displayScore();
+            serveCounter++;
+        }
+        match.end();
+    }
+
     public static void main(String[] args) {
         System.out.println("Program for TT scorer");
-
-        TTPlayer player1 = new TTPlayer("Sharath Achanta");
-        TTPlayer player2 = new TTPlayer("Soumyajit Ghosh");
-        Match match = new Match(Match.State.NOT_STARTED, player1, player2);
-        boolean serveIndicator = false;
-        while (!match.isMatchEnded()) {
-            match.changeMatchStatus(Match.State.IN_PROGRESS);
-            player1.setServing(!serveIndicator);
-            player2.setServing(serveIndicator);
-            for (int i = 0; i < MAX_POINTS * 2; i++) {
-                if (i != 0 && i % SERVE_CHANGE == 0) {
-                    player1.setServing(serveIndicator);
-                    player2.setServing(!serveIndicator);
-                    match.displayServeChangeMsg(serveIndicator);
-                    match.displayScore();
-                    serveIndicator = !serveIndicator;
-                }
-
-                updatePlayerPoints(player1, player2);
-
-                if (player1.getPoints() == GOLDEN_POINT && player2.getPoints() == GOLDEN_POINT) {
-                    continue;
-                } else if (player1.getPoints() == GOLDEN_POINT + 1 || player2.getPoints() == GOLDEN_POINT + 1) {
-                    break;
-                } else if (player1.getPoints() > 10
-                        || player2.getPoints() > 10) {
-                    if (Math.abs(player1.getPoints() - player2.getPoints()) > 1)
-                        break;
-                }
-
-            }
-            match.changeMatchStatus(Match.State.COMPLETED);
-        }
-        match.displayMatchResult();
+        System.out.println("Please enter the player full names");
+        //Commented code can be used to input player names
+        /*Scanner in = new Scanner(System.in);
+        String player1_name = in.nextLine();
+        String player2_name = in.nextLine();*/
+        String player1_name = "Anand Zaveri";
+        String player2_name = "Neha Zaveri";
+        Match ttMatch = new Match(Match.State.NOT_STARTED,
+                new TTPlayer(player1_name),
+                new TTPlayer(player2_name));
+        Game ttGame = new Game(ttMatch);
+        ttGame.play();
+        ttGame.displayGameResult();
 
     }
 
-    private static void updatePlayerPoints(Player p1, Player p2) {
-        if (TTUtil.getRandomPoint() % 2 == 0) {
-            p1.incrementPoint();
+    public static boolean isServeChangeRequired(int serveCounter){
+        return serveCounter != 0 && serveCounter % SERVE_CHANGE == 0;
+    }
+
+    private void displayServeMessage() {
+        System.out.println("*********");
+        System.out.println("Serve change");
+        if (match.getPlayer1().isServing()) {
+            System.out.println(match.getPlayer1().getFullName() + " is serving.");
+            System.out.println(match.getPlayer2().getFullName() + " is receiving.");
         } else {
-            p2.incrementPoint();
+            System.out.println(match.getPlayer2().getFullName() + " is serving.");
+            System.out.println(match.getPlayer1().getFullName() + " is receiving.");
         }
+        System.out.println("*********");
     }
 
+    private void displayScore() {
+        System.out.println("*********");
+        System.out.println("Status : " + match.getState().toString());
+        System.out.println(match.getPlayer1().toString());
+        System.out.println(match.getPlayer2().toString());
+        System.out.println("*********");
+    }
+
+    private void displayGameResult() {
+        displayScore();
+        System.out.println("*********");
+        System.out.println("Winner is : " + match.getWinner().getFullName());
+        System.out.println("Loser is : " + match.getLoser().getFullName());
+        System.out.println("*********");
+    }
 
 }

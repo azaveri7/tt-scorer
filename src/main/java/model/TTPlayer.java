@@ -1,10 +1,14 @@
 package model;
 
-public class TTPlayer implements Player{
+public class TTPlayer {
 
     private final String fullName;
     private int points;
     private boolean isServing;
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
 
     public boolean isServing() {
         return isServing;
@@ -14,7 +18,7 @@ public class TTPlayer implements Player{
         isServing = serving;
     }
 
-    public TTPlayer(String fullName){
+    public TTPlayer(String fullName) {
         this.fullName = fullName;
         this.points = 0;
     }
@@ -27,22 +31,13 @@ public class TTPlayer implements Player{
         return points;
     }
 
-    @Override
-    public void incrementPoint(){
+    public void incrementPoint() {
         this.points += 1;
     }
 
     @Override
-    public String toString(){
-        StringBuilder playerString = new StringBuilder();
-        playerString.append("Name: " + getFullName())
-                .append(" Points: " + getPoints());
-        return playerString.toString();
-    }
-
-    public String getScoreCardName(){
-        String[] bits = this.fullName.split(" ");
-        if (bits.length == 0 || bits[0].length() < 1) return this.fullName;
-        return bits[0].charAt(0) + " " + bits[bits.length - 1];
+    public String toString() {
+        return "Name: " + getFullName() +
+                " Points: " + getPoints();
     }
 }
