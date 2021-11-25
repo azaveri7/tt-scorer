@@ -2,10 +2,8 @@ package model;
 
 import util.RandomNumberGenerator;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.Stack;
 
 import static util.TTConstants.*;
 
@@ -20,8 +18,7 @@ public class Match {
     private final TTPlayer player2;
     private TTPlayer currPlayer;
     private boolean isCons;
-    private Stack<TTPlayer> consecutivePlayers = new Stack<>();
-    private List<TTPlayer> queuePlayers = new LinkedList<>();
+    private List<TTPlayer> consecutivePlayers = new ArrayList<>();
 
     public Match( String player1, String player2) {
         this.state = State.NOT_STARTED;
@@ -90,8 +87,19 @@ public class Match {
             return false;
         } else if (isCons) {
             consecutivePlayers.add(currPlayer);
-
-            if(consecutivePlayers.size() == CONSECUTIVE_POINT_ORDER){
+            int counter= 0;
+            int len = consecutivePlayers.size();
+            for(int i = len - 1; i >= 0; i--){
+                if(consecutivePlayers.get(i).equals(currPlayer)){
+                    counter++;
+                } else {
+                    break;
+                }
+            }
+            if(counter == CONSECUTIVE_POINT_ORDER){
+                return true;
+            }
+            /*if(consecutivePlayers.size() == CONSECUTIVE_POINT_ORDER){
                 int counter = 0;
                 while(consecutivePlayers.size() > 0){
                         TTPlayer player = consecutivePlayers.pop();
@@ -108,7 +116,7 @@ public class Match {
                         }
                     }
                 return true;
-                }
+                }*/
             } else if (this.getPlayer1().getPoints() > 10
                 || this.getPlayer2().getPoints() > 10) {
             return Math.abs(this.getPlayer1().getPoints() - this.getPlayer2().getPoints()) > 1;

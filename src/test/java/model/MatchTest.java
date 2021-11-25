@@ -194,7 +194,7 @@ class MatchTest {
         assertEquals(player1, match.getLoser());
     }
 
-    @Test
+    /*@Test
     public void shouldCheckForConsecutivePointsAfterConsPoint(){
         TTPlayer player1 = new TTPlayer("Anand Zaveri");
         player1.setServing(true);
@@ -212,9 +212,9 @@ class MatchTest {
         assertTrue(match.isEnded());
         assertEquals(player1, match.getWinner());
 
-    }
+    }*/
 
-    @Test
+    /*@Test
     public void shouldCheckForConsecutivePointsAfterAlternatePlayerPoints(){
         TTPlayer player1 = new TTPlayer("Anand Zaveri");
         player1.setServing(true);
@@ -234,9 +234,9 @@ class MatchTest {
         assertTrue(match.isEnded());
         assertEquals(player1, match.getWinner());
 
-    }
+    }*/
 
-    /*@Test
+    @Test
     public void shouldCheckForConsecutivePointsByChangingValueOfConsecutivePoints(){
         TTPlayer player1 = new TTPlayer("Anand Zaveri");
         player1.setServing(true);
@@ -265,5 +265,5 @@ class MatchTest {
         assertTrue(match.isEnded());
         assertEquals(player1, match.getWinner());
 
-    }*/
+    }
 }
