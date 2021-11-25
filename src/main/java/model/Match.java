@@ -2,6 +2,9 @@ package model;
 
 import util.RandomNumberGenerator;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.Stack;
 
 import static util.TTConstants.*;
@@ -18,6 +21,7 @@ public class Match {
     private TTPlayer currPlayer;
     private boolean isCons;
     private Stack<TTPlayer> consecutivePlayers = new Stack<>();
+    private List<TTPlayer> queuePlayers = new LinkedList<>();
 
     public Match( String player1, String player2) {
         this.state = State.NOT_STARTED;
@@ -57,6 +61,8 @@ public class Match {
             this.getPlayer2().incrementPoint();
             currPlayer = this.getPlayer2();
         }
+
+        System.out.println(currPlayer);
     }
 
     public void start(){
@@ -83,28 +89,23 @@ public class Match {
             isCons = true;
             return false;
         } else if (isCons) {
-            if(this.getPlayer1().getPoints() == this.getPlayer2().getPoints()){
-                consecutivePlayers.add(currPlayer);
-            }else if(this.getPlayer1().getPoints() > this.getPlayer2().getPoints()){
-                consecutivePlayers.add(this.getPlayer1());
-                currPlayer = player1;
-            } else{
-                consecutivePlayers.add(this.getPlayer2());
-                currPlayer = player2;
-            }
+            consecutivePlayers.add(currPlayer);
 
             if(consecutivePlayers.size() == CONSECUTIVE_POINT_ORDER){
+                int counter = 0;
                 while(consecutivePlayers.size() > 0){
-
-
                         TTPlayer player = consecutivePlayers.pop();
+                        queuePlayers.add(player);
                         if(player.equals(currPlayer)){
+                            counter++;
                             continue;
                         } else {
-                            consecutivePlayers.add(currPlayer);
+                            for(int i = 0; i < counter; i++){
+                                consecutivePlayers.add(queuePlayers.get(i));
+                            }
+                            queuePlayers.clear();
                             return false;
                         }
-
                     }
                 return true;
                 }

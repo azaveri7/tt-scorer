@@ -5,7 +5,6 @@ public class TTPlayer implements Comparable<TTPlayer>{
     private final String fullName;
     private int points;
     private boolean isServing;
-    private boolean isConsecutive;
 
     public void setPoints(int points) {
         this.points = points;
