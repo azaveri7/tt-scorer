@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import util.RandomNumberGenerator;
+import util.TTConstants;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -191,5 +192,47 @@ class MatchTest {
         player2.setPoints(21);
         match.end();
         assertEquals(player1, match.getLoser());
+    }
+
+    @Test
+    public void shouldCheckForConsecutivePointsAfterConsPoint(){
+        TTPlayer player1 = new TTPlayer("Anand Zaveri");
+        player1.setServing(true);
+        TTPlayer player2 = new TTPlayer("Neha Zaveri");
+        Match match = new Match(State.NOT_STARTED, player1, player2);
+        match.start();
+
+        player1.setPoints(TTConstants.CONSECUTIVE_POINT);
+        player2.setPoints(TTConstants.CONSECUTIVE_POINT);
+        randomNumberGenerator.when(RandomNumberGenerator::get).thenReturn(2);
+        assertFalse(match.isEnded());
+        match.updatePlayerPoints();
+        assertFalse(match.isEnded());
+        match.updatePlayerPoints();
+        assertTrue(match.isEnded());
+        assertEquals(player1, match.getWinner());
+
+    }
+
+    @Test
+    public void shouldCheckForConsecutivePointsAfterAlternatePlayerPoints(){
+        TTPlayer player1 = new TTPlayer("Anand Zaveri");
+        player1.setServing(true);
+        TTPlayer player2 = new TTPlayer("Neha Zaveri");
+        Match match = new Match(State.NOT_STARTED, player1, player2);
+        match.start();
+
+        player1.setPoints(TTConstants.CONSECUTIVE_POINT);
+        player2.setPoints(TTConstants.CONSECUTIVE_POINT);
+        randomNumberGenerator.when(RandomNumberGenerator::get).thenReturn(3).thenReturn(2);
+        assertFalse(match.isEnded());
+        match.updatePlayerPoints();
+        assertFalse(match.isEnded());
+        match.updatePlayerPoints();
+        assertFalse(match.isEnded());
+        match.updatePlayerPoints();
+        assertTrue(match.isEnded());
+        assertEquals(player1, match.getWinner());
+
     }
 }

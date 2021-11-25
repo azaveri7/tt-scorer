@@ -1,6 +1,9 @@
 package model;
 
 import util.RandomNumberGenerator;
+
+import java.util.Stack;
+
 import static util.TTConstants.*;
 
 public class Match {
@@ -12,6 +15,9 @@ public class Match {
     private State state;
     private final TTPlayer player1;
     private final TTPlayer player2;
+    private TTPlayer currPlayer;
+    private boolean isCons;
+    private Stack<TTPlayer> consecutivePlayers = new Stack<>();
 
     public Match( String player1, String player2) {
         this.state = State.NOT_STARTED;
@@ -43,10 +49,13 @@ public class Match {
     }
 
     public void updatePlayerPoints() {
+
         if (RandomNumberGenerator.get() % 2 == 0) {
             this.getPlayer1().incrementPoint();
+            currPlayer = this.getPlayer1();
         } else {
             this.getPlayer2().incrementPoint();
+            currPlayer = this.getPlayer2();
         }
     }
 
@@ -69,9 +78,39 @@ public class Match {
             return false;
         } else if (this.getPlayer1().getPoints() == MAX_POINTS || this.getPlayer2().getPoints() == MAX_POINTS) {
             return true;
-        } else if (this.getPlayer1().getPoints() > 10
+        } else if (this.getPlayer1().getPoints() == CONSECUTIVE_POINT
+                && this.getPlayer2().getPoints() == CONSECUTIVE_POINT) {
+            isCons = true;
+            return false;
+        } else if (isCons) {
+            if(this.getPlayer1().getPoints() == this.getPlayer2().getPoints()){
+                consecutivePlayers.add(currPlayer);
+            }else if(this.getPlayer1().getPoints() > this.getPlayer2().getPoints()){
+                consecutivePlayers.add(this.getPlayer1());
+                currPlayer = player1;
+            } else{
+                consecutivePlayers.add(this.getPlayer2());
+                currPlayer = player2;
+            }
+
+            if(consecutivePlayers.size() == CONSECUTIVE_POINT_ORDER){
+                while(consecutivePlayers.size() > 0){
+
+
+                        TTPlayer player = consecutivePlayers.pop();
+                        if(player.equals(currPlayer)){
+                            continue;
+                        } else {
+                            consecutivePlayers.add(currPlayer);
+                            return false;
+                        }
+
+                    }
+                return true;
+                }
+            } else if (this.getPlayer1().getPoints() > 10
                 || this.getPlayer2().getPoints() > 10) {
-              return Math.abs(this.getPlayer1().getPoints() - this.getPlayer2().getPoints()) > 1;
+            return Math.abs(this.getPlayer1().getPoints() - this.getPlayer2().getPoints()) > 1;
         }
         return false;
     }
